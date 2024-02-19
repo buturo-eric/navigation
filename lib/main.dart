@@ -1,18 +1,60 @@
 import 'package:flutter/material.dart';
-import 'calculator_screen.dart'; // Import the calculator screen
+import 'package:navigation/Provider/provider.dart';
+import 'package:provider/provider.dart';
+import 'Views/calculator_screen.dart';
+import 'Views/login_page.dart';
+import 'package:navigation/Views/settings.dart';
+
+// void main() {
+//   runApp(const MyApp());
+// }
+
+// class MyApp extends StatelessWidget {
+//   const MyApp({Key? key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       debugShowCheckedModeBanner: false,
+//       home: Widget197(),
+//     );
+//   }
+// }
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Widget197(),
+    return ChangeNotifierProvider(
+      create: (BuildContext context) => UiProvider()..init(),
+      child:
+          Consumer<UiProvider>(builder: (context, UiProvider notifier, child) {
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Assignment',
+          //By default theme setting, you can also set system
+          // when your mobile theme is dark the app also become dark
+
+          themeMode: notifier.isDark ? ThemeMode.dark : ThemeMode.light,
+
+          //Our custom theme applied
+          darkTheme: notifier.isDark ? notifier.darkTheme : notifier.lightTheme,
+
+          theme: ThemeData(
+            colorScheme: ColorScheme.fromSeed(
+                seedColor: Color.fromARGB(255, 27, 18, 93)),
+            useMaterial3: true,
+          ),
+          // home: const Settings(),
+          home: Widget197(),
+        );
+      }),
     );
   }
 }
@@ -60,11 +102,21 @@ class _Widget197State extends State<Widget197> {
         ],
       ),
     ),
+    LoginPage(),
   ];
 
   void _onItemTapped(int index) {
     setState(() {
-      _selectedIndex = index;
+      if (index < 4) {
+        _selectedIndex = index;
+      } else {
+        // Handle the case where the index is 4 (Settings)
+        // In this case, navigate to the Settings page
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => Settings()),
+        );
+      }
     });
   }
 
@@ -109,6 +161,7 @@ class _Widget197State extends State<Widget197> {
               ),
             ),
             ListTile(
+              leading: Icon(Icons.home),
               title: Text('Home'),
               onTap: () {
                 _onItemTapped(0);
@@ -116,6 +169,7 @@ class _Widget197State extends State<Widget197> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.calculate),
               title: Text('Calculator'),
               onTap: () {
                 _onItemTapped(1);
@@ -123,9 +177,27 @@ class _Widget197State extends State<Widget197> {
               },
             ),
             ListTile(
+              leading: Icon(Icons.person),
               title: Text('About'),
               onTap: () {
                 _onItemTapped(2);
+                Navigator.pop(context);
+              },
+            ),
+            SizedBox(height: 200),
+            ListTile(
+              leading: Icon(Icons.lock),
+              title: Text('LogOut'),
+              onTap: () {
+                _onItemTapped(3);
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.settings),
+              title: Text('Settings'),
+              onTap: () {
+                _onItemTapped(4);
                 Navigator.pop(context);
               },
             ),
@@ -149,9 +221,18 @@ class _Widget197State extends State<Widget197> {
             icon: Icon(Icons.person),
             label: 'About',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.lock),
+            label: 'LogOut',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Settings',
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Color.fromARGB(143, 17, 127, 94),
+        unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
     );

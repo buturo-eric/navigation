@@ -41,7 +41,7 @@ class _CalculatorState extends State<Calculator> {
         style: ElevatedButton.styleFrom(
           shape: CircleBorder(),
           primary: btncolor,
-          padding: EdgeInsets.all(20),
+          padding: EdgeInsets.all(15),
         ),
       ),
     );
@@ -63,7 +63,7 @@ class _CalculatorState extends State<Calculator> {
                 child: Text(
                   text,
                   textAlign: TextAlign.left,
-                  style: TextStyle(color: Colors.white, fontSize: 100),
+                  style: TextStyle(color: Colors.white, fontSize: 70),
                 ),
               )
             ],
@@ -160,67 +160,85 @@ class _CalculatorState extends State<Calculator> {
 
   void calculation(btnText) {
     if (btnText == 'AC') {
-      text = '0';
-      numOne = 0;
-      numTwo = 0;
-      result = '';
-      finalResult = '0';
-      opr = '';
-      preOpr = '';
-    } else if (opr == '=' && btnText == '=') {
-      if (preOpr == '+') {
-        finalResult = add();
-      } else if (preOpr == '-') {
-        finalResult = sub();
-      } else if (preOpr == 'x') {
-        finalResult = mul();
-      } else if (preOpr == '/') {
-        finalResult = div();
+      // Clear all variables
+      setState(() {
+        text = '0';
+        numOne = 0;
+        numTwo = 0;
+        result = '';
+        finalResult = '0';
+        opr = '';
+        preOpr = '';
+      });
+    } else if (btnText == '=') {
+      // Perform calculation when equals is pressed
+      numTwo = double.parse(result);
+      if (opr == '+') {
+        setState(() {
+          finalResult = add();
+        });
+      } else if (opr == '-') {
+        setState(() {
+          finalResult = sub();
+        });
+      } else if (opr == 'x') {
+        setState(() {
+          finalResult = mul();
+        });
+      } else if (opr == '/') {
+        setState(() {
+          finalResult = div();
+        });
       }
+      // Reset variables
+      setState(() {
+        numOne = double.parse(finalResult);
+        result = '';
+        opr = '';
+        preOpr = '';
+        text = finalResult;
+      });
     } else if (btnText == '+' ||
         btnText == '-' ||
         btnText == 'x' ||
-        btnText == '/' ||
-        btnText == '=') {
-      if (numOne == 0) {
-        numOne = double.parse(result);
-      } else {
-        numTwo = double.parse(result);
-      }
-
-      if (opr == '+') {
-        finalResult = add();
-      } else if (opr == '-') {
-        finalResult = sub();
-      } else if (opr == 'x') {
-        finalResult = mul();
-      } else if (opr == '/') {
-        finalResult = div();
-      }
-      preOpr = opr;
-      opr = btnText;
-      result = '';
+        btnText == '/') {
+      // Set operator
+      setState(() {
+        opr = btnText;
+        if (numOne == 0) {
+          numOne = double.parse(result);
+          result = '';
+        }
+      });
     } else if (btnText == '%') {
-      result = (numOne / 100).toString();
-      finalResult = doesContainDecimal(result);
-    } else if (btnText == '.') {
-      if (!result.toString().contains('.')) {
-        result = result.toString() + '.';
-      }
-      finalResult = result;
+      // Calculate percentage
+      setState(() {
+        result = (numOne / 100).toString();
+        finalResult = result;
+        text = finalResult;
+      });
     } else if (btnText == '+/-') {
-      result.toString().startsWith('-')
-          ? result = result.toString().substring(1)
-          : result = '-' + result.toString();
-      finalResult = result;
+      // Change sign
+      setState(() {
+        if (result.startsWith('-')) {
+          result = result.substring(1);
+        } else {
+          result = '-' + result;
+        }
+        finalResult = result;
+        text = finalResult;
+      });
     } else {
-      result = result + btnText;
-      finalResult = result;
+      // Append digits to result
+      setState(() {
+        if (result == '0' || result == finalResult) {
+          result = btnText;
+        } else {
+          result += btnText;
+        }
+        text = result;
+      });
     }
-
-    setState(() {
-      text = finalResult;
-    });
   }
 
   String add() {
