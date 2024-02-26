@@ -56,9 +56,10 @@ class Widget197 extends StatefulWidget {
 
 class _Widget197State extends State<Widget197> {
   int _selectedIndex = 0;
-  File? _image;
+  File? _selectedImage; // Change this variable name to _selectedImage
 
   late List<Widget> _widgetOptions;
+  late Widget _aboutContentWidget; // Add this line
 
   @override
   void initState() {
@@ -81,10 +82,18 @@ class _Widget197State extends State<Widget197> {
         ),
       ),
       CalculatorScreen(),
-      AboutContentWidget(), // Remove pickImage parameter here
+      _aboutContentWidget = AboutContentWidget(
+          onImageSelected: _handleImageSelected), // Modify this line
       LoginPage(),
       ContactPage(), // Add ContactPage here
     ];
+  }
+
+  // Define a function to handle the selected image
+  void _handleImageSelected(File? image) {
+    setState(() {
+      _selectedImage = image;
+    });
   }
 
   Future<void> pickImage() async {
@@ -95,7 +104,7 @@ class _Widget197State extends State<Widget197> {
       // Use the picked image, for example, display it in an Image widget
       // You can also save the image to a file, upload it to a server, etc.
       setState(() {
-        _image = File(pickedFile.path);
+        _selectedImage = File(pickedFile.path);
       });
     } else {
       // User canceled the image picking
@@ -215,7 +224,8 @@ class _Widget197State extends State<Widget197> {
               leading: Icon(Icons.contact_emergency_rounded),
               title: Text('Contact'),
               onTap: () {
-                _onItemTapped(4);
+                _onItemTapped(
+                    4); // Navigate to ContactPage, which corresponds to index 4
                 Navigator.pop(context);
               },
             ),
@@ -223,7 +233,8 @@ class _Widget197State extends State<Widget197> {
               leading: Icon(Icons.settings),
               title: Text('Settings'),
               onTap: () {
-                _onItemTapped(5);
+                _onItemTapped(
+                    5); // Navigate to Settings, which corresponds to index 5
                 Navigator.pop(context);
               },
             ),
@@ -269,18 +280,36 @@ class _Widget197State extends State<Widget197> {
   }
 }
 
-class AboutContentWidget extends StatelessWidget {
+class AboutContentWidget extends StatefulWidget {
+  final Function(File?) onImageSelected;
+
+  const AboutContentWidget({Key? key, required this.onImageSelected})
+      : super(key: key);
+
+  @override
+  _AboutContentWidgetState createState() => _AboutContentWidgetState();
+}
+
+class _AboutContentWidgetState extends State<AboutContentWidget> {
+  File? _image;
+
   @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(
-          "Hi, I'm Eric",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
+        Container(
+          width: 200, // Adjust the width and height as needed
+          height: 200,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            border: Border.all(color: Colors.black, width: 2),
+          ),
+          child: ClipOval(
+            child: _image != null
+                ? Image.file(_image!, fit: BoxFit.cover)
+                : Icon(Icons.person,
+                    size: 50), // Placeholder icon if no image selected
           ),
         ),
         SizedBox(height: 20),
@@ -291,12 +320,14 @@ class AboutContentWidget extends StatelessWidget {
                 await picker.getImage(source: ImageSource.gallery);
 
             if (pickedFile != null) {
-              // Use the picked image, for example, display it in an Image widget
-              // You can also save the image to a file, upload it to a server, etc.
               final image = File(pickedFile.path);
-              // Handle the picked image here
+              setState(() {
+                _image = image;
+              });
+              widget.onImageSelected(
+                  _image); // Notify parent widget about the selected image
             } else {
-              // User canceled the image picking
+              print('Image picking canceled');
             }
           },
           child: Text('Pick Image'),
@@ -309,12 +340,14 @@ class AboutContentWidget extends StatelessWidget {
                 await picker.pickImage(source: ImageSource.camera);
 
             if (pickedFile != null) {
-              // Use the picked image, for example, display it in an Image widget
-              // You can also save the image to a file, upload it to a server, etc.
               final image = File(pickedFile.path);
-              // Handle the picked image here
+              setState(() {
+                _image = image;
+              });
+              widget.onImageSelected(
+                  _image); // Notify parent widget about the selected image
             } else {
-              // User canceled opening the camera
+              print('User canceled opening the camera');
             }
           },
           child: Text('Open Camera'),

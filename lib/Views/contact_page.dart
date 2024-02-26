@@ -43,51 +43,66 @@ class _ContactPageState extends State<ContactPage> {
   }
 
   void _sendMessageToContact(Contact contact) async {
-  final phoneNumber = contact.phones?.first.value;
+    final phoneNumber = contact.phones?.first.value;
 
-  if (phoneNumber != null) {
-    final message = "Your SMS message here";
-    final uri = Uri.encodeFull("sms:$phoneNumber?body=$message");
+    if (phoneNumber != null) {
+      final message = "Type message here";
+      final uri = Uri.encodeFull("sms:$phoneNumber?body=$message");
 
-    try {
-      await launch(uri);
-    } catch (e) {
-      print("Error launching messaging app: $e");
+      try {
+        await launch(uri);
+      } catch (e) {
+        print("Error launching messaging app: $e");
+      }
+    } else {
+      print("Phone number not available");
     }
-  } else {
-    print("Phone number not available");
   }
-}
-
-
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Contact Page'),
+        title: Text('Contacts',
+            style: TextStyle(color: Color.fromARGB(255, 186, 229, 15))),
+        backgroundColor:
+            const Color.fromARGB(255, 7, 50, 85), // Change the app bar color
       ),
       body: ListView.builder(
         itemCount: _contacts.length,
         itemBuilder: (context, index) {
           final contact = _contacts[index];
-          return ListTile(
-            title: Text(contact.displayName ?? ''),
-            subtitle: Text(contact.phones?.isNotEmpty == true
-                ? contact.phones!.first.value!
-                : 'No phone number'),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.phone),
-                  onPressed: () => _callContact(contact),
-                ),
-                IconButton(
-                  icon: Icon(Icons.message),
-                  onPressed: () => _sendMessageToContact(contact),
-                ),
-              ],
+          return Card(
+            // Wrap the ListTile with a Card for better visual separation
+            elevation: 2, // Add some elevation to the card
+            margin: EdgeInsets.symmetric(
+                vertical: 8, horizontal: 16), // Add margin around the card
+            child: ListTile(
+              title: Text(
+                contact.displayName ?? '',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                contact.phones?.isNotEmpty == true
+                    ? contact.phones!.first.value!
+                    : 'No phone number',
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(Icons.phone),
+                    onPressed: () => _callContact(contact),
+                    color: Colors.green, // Change the icon color
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.message),
+                    onPressed: () => _sendMessageToContact(contact),
+                    color: const Color.fromARGB(
+                        255, 7, 50, 85), // Change the icon color
+                  ),
+                ],
+              ),
             ),
           );
         },
