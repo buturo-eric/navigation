@@ -1,17 +1,78 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:navigation/Views/home_page.dart';
 import 'package:navigation/components/my_textfield.dart';
 import 'package:navigation/components/my_button.dart';
 import 'package:navigation/components/square_tile.dart';
+import 'package:navigation/services/auth_service.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({Key? key});
 
-  // text editing controllers
-  final usernameController = TextEditingController();
+  final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+  final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  // sign user in method
-  void signUserUp() {}
+  void _signUserUp(BuildContext context) async {
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    try {
+      await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: emailController.text,
+        password: passwordController.text,
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => HomePage()),
+      );
+    } on FirebaseAuthException catch (e) {
+      String errorMessage = 'An error occurred, please try again.';
+      if (e.code == 'email-already-in-use') {
+        errorMessage = 'The account already exists for that email.';
+      } else {
+        errorMessage = e.message ?? errorMessage;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(errorMessage)),
+      );
+    } catch (e) {
+      print('Sign-up failed: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('An error occurred, please try again.')),
+      );
+    }
+  }
+
+  void _signInWithGoogle(BuildContext context) async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+      if (googleUser != null) {
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
+        final AuthCredential credential = GoogleAuthProvider.credential(
+          accessToken: googleAuth.accessToken,
+          idToken: googleAuth.idToken,
+        );
+        final UserCredential authResult =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => HomePage()),
+        );
+      } else {
+        print('Google Sign-In canceled');
+      }
+    } catch (error) {
+      print('Google Sign-In error: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,19 +80,16 @@ class RegisterPage extends StatelessWidget {
       backgroundColor: Colors.grey[300],
       body: SafeArea(
         child: SingleChildScrollView(
-          // Wrap the content in SingleChildScrollView
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 const SizedBox(height: 10),
-                // logo
                 const Icon(
-                  Icons.lock,
+                  Icons.person,
                   size: 100,
                 ),
                 const SizedBox(height: 25),
-                // Let's create an account for you!
                 Text(
                   'Let\'s create an account for you!',
                   style: TextStyle(
@@ -40,48 +98,31 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25),
-                // username textfield
                 MyTextField(
-                  controller: usernameController,
+                  controller: emailController,
                   hintText: 'Username',
                   obscureText: false,
                 ),
                 const SizedBox(height: 10),
-                // password textfield
                 MyTextField(
                   controller: passwordController,
                   hintText: 'Password',
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                // confirm password textfield
                 MyTextField(
-                  controller: passwordController,
+                  controller: confirmPasswordController,
                   hintText: 'Confirm Password',
                   obscureText: true,
                 ),
                 const SizedBox(height: 10),
-                // // forgot password?
-                // Padding(
-                //   padding: const EdgeInsets.symmetric(horizontal: 25.0),
-                //   child: Row(
-                //     mainAxisAlignment: MainAxisAlignment.end,
-                //     children: [
-                //       Text(
-                //         'Forgot Password?',
-                //         style: TextStyle(color: Colors.grey[600]),
-                //       ),
-                //     ],
-                //   ),
-                // ),
-                const SizedBox(height: 25),
-                // sign in button
                 MyButton(
                   text: "Sign Up",
-                  onTap: signUserUp,
+                  onTap: () {
+                    _signUserUp(context);
+                  },
                 ),
                 const SizedBox(height: 25),
-                // or continue with
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
@@ -109,19 +150,17 @@ class RegisterPage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 25),
-                // google + apple sign in buttons
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    // google button
-                    SquareTile(imagePath: 'lib/images/google.png'),
+                  children: [
+                    SquareTile(
+                        onTap: () => _signInWithGoogle(context),
+                        imagePath: 'lib/images/google.png'),
                     SizedBox(width: 25),
-                    // apple button
-                    SquareTile(imagePath: 'lib/images/apple.png')
+                    SquareTile(onTap: () {}, imagePath: 'lib/images/apple.png')
                   ],
                 ),
                 const SizedBox(height: 20),
-                // Already have an account? login now
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -135,7 +174,7 @@ class RegisterPage extends StatelessWidget {
                         Navigator.pop(context);
                       },
                       child: const Text(
-                        'Login now',
+                        'Login',
                         style: TextStyle(
                           color: Colors.blue,
                           fontWeight: FontWeight.bold,

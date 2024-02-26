@@ -1,10 +1,38 @@
+import 'dart:async';
+
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
 import 'package:navigation/Provider/provider.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatelessWidget {
+class Settings extends StatefulWidget {
   const Settings({Key? key});
+
+  @override
+  _SettingsState createState() => _SettingsState();
+}
+
+class _SettingsState extends State<Settings> {
+  late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+
+  @override
+  void initState() {
+    super.initState();
+    // Start listening to connectivity changes
+    _connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) {
+      setState(() {
+        // Trigger a rebuild when connectivity changes
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    _connectivitySubscription.cancel();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -31,24 +59,7 @@ class Settings extends StatelessWidget {
               margin: const EdgeInsets.all(20),
               width: double.infinity,
               height: double.infinity,
-              child: StreamBuilder(
-                stream: Connectivity().onConnectivityChanged,
-                builder: (context, AsyncSnapshot<ConnectivityResult> snapshot) {
-                  print(snapshot.toString());
-                  if (snapshot.hasData) {
-                    ConnectivityResult? result = snapshot.data;
-                    if (result == ConnectivityResult.mobile) {
-                      return connected('Mobile');
-                    } else if (result == ConnectivityResult.wifi) {
-                      return connected('WIFI');
-                    } else {
-                      return noInternet();
-                    }
-                  } else {
-                    return loading();
-                  }
-                },
-              ),
+              child: _buildConnectivityWidget(),
             ),
           ),
         ],
@@ -56,7 +67,28 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget loading() {
+  Widget _buildConnectivityWidget() {
+    return StreamBuilder<ConnectivityResult>(
+      stream: Connectivity().onConnectivityChanged,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          ConnectivityResult result = snapshot.data!;
+          if (result == ConnectivityResult.mobile) {
+            return _connected('Mobile');
+          } else if (result == ConnectivityResult.wifi) {
+            return _connected('Wi-Fi');
+          } else {
+            return _noInternet();
+          }
+        } else {
+          // If no data, show loading indicator
+          return _loading();
+        }
+      },
+    );
+  }
+
+  Widget _loading() {
     return const Center(
       child: CircularProgressIndicator(
         valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
@@ -64,7 +96,7 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget connected(String type) {
+  Widget _connected(String type) {
     return Center(
       child: Text(
         "$type Connected",
@@ -76,38 +108,46 @@ class Settings extends StatelessWidget {
     );
   }
 
-  Widget noInternet() {
+  Widget _noInternet() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Image.asset(
-          'assets/no_internet.png',
-          color: Colors.red,
+          'lib/images/no_internet.jpg',
           height: 100,
         ),
         Container(
           margin: const EdgeInsets.only(top: 20, bottom: 10),
           child: const Text(
             "No Internet connection",
-            style: TextStyle(fontSize: 22),
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.red,
+            ),
           ),
         ),
         Container(
           margin: const EdgeInsets.only(bottom: 20),
-          child: const Text("Check your connection, then refresh the page."),
-        ),
-        ElevatedButton(
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all(Colors.green),
+          child: const Text(
+            "No Connection, please Check your connection to proceed.",
+            style: TextStyle(
+              fontSize: 13,
+              color: Colors.red,
+            ),
           ),
-          onPressed: () async {
-            ConnectivityResult result =
-                await Connectivity().checkConnectivity();
-            print(result.toString());
-          },
-          child: const Text("Refresh"),
         ),
+        // ElevatedButton(
+        //   style: ButtonStyle(
+        //     backgroundColor: MaterialStateProperty.all(Colors.green),
+        //   ),
+        //   onPressed: () async {
+        //     ConnectivityResult result =
+        //         await Connectivity().checkConnectivity();
+        //     print(result.toString());
+        //   },
+        //   child: const Text("Refresh"),
+        // ),
       ],
     );
   }

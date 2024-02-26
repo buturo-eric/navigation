@@ -17,7 +17,15 @@ dependencies:
   cupertino_icons: ^1.0.2
   shared_preferences: ^2.0.12
   provider: ^6.1.1
-  connectivity: ^3.0.6 # Moved here
+  connectivity: ^3.0.6
+  google_sign_in: ^6.2.1
+  firebase_core: ^2.25.4
+  firebase_auth: ^4.17.4
+  permission_handler: ^8.1.6
+  image_picker: ^0.8.4+4
+  camera: ^0.10.5+9
+  url_launcher: ^6.0.10
+  contacts_service: ^0.6.3
 
 dev_dependencies:
   flutter_test:
