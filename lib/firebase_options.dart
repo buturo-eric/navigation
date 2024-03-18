@@ -44,37 +44,37 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyC22wx5IKAcoALTwDX5PCWI2nFQCMQkRlw',
-    appId: '1:59030283509:web:15a75e27f3a1906b3a91bc',
-    messagingSenderId: '59030283509',
-    projectId: 'enhanced-layout-388519',
-    authDomain: 'enhanced-layout-388519.firebaseapp.com',
-    storageBucket: 'enhanced-layout-388519.appspot.com',
+    apiKey: 'AIzaSyAVsLcn3ScEEm6zncw7LJNSdoRm0xxbCh8',
+    appId: '1:369484143138:web:2f14634f54bffe671fc87b',
+    messagingSenderId: '369484143138',
+    projectId: 'quizzle-demo-36e5c',
+    authDomain: 'quizzle-demo-36e5c.firebaseapp.com',
+    storageBucket: 'quizzle-demo-36e5c.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDd4DB98_iLykgQGJhA-sZBKjhFbAyueZg',
-    appId: '1:59030283509:android:efeea5065345a71c3a91bc',
-    messagingSenderId: '59030283509',
-    projectId: 'enhanced-layout-388519',
-    storageBucket: 'enhanced-layout-388519.appspot.com',
+    apiKey: 'AIzaSyD08X-yf7ggVT41VBl8RbFbwrwvRxjpPhg',
+    appId: '1:369484143138:android:895ddbddc36867ce1fc87b',
+    messagingSenderId: '369484143138',
+    projectId: 'quizzle-demo-36e5c',
+    storageBucket: 'quizzle-demo-36e5c.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCB04e_LNZjUWCjAKUJJSuqSG-J44WbMog',
-    appId: '1:59030283509:ios:19bc94cfeb85ed213a91bc',
-    messagingSenderId: '59030283509',
-    projectId: 'enhanced-layout-388519',
-    storageBucket: 'enhanced-layout-388519.appspot.com',
+    apiKey: 'AIzaSyB60EYgoHFPfI92DtjusNrem3gMdCYN5R4',
+    appId: '1:369484143138:ios:559c98080f82f2371fc87b',
+    messagingSenderId: '369484143138',
+    projectId: 'quizzle-demo-36e5c',
+    storageBucket: 'quizzle-demo-36e5c.appspot.com',
     iosBundleId: 'com.example.navigation',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyCB04e_LNZjUWCjAKUJJSuqSG-J44WbMog',
-    appId: '1:59030283509:ios:cb6dd09056d92b713a91bc',
-    messagingSenderId: '59030283509',
-    projectId: 'enhanced-layout-388519',
-    storageBucket: 'enhanced-layout-388519.appspot.com',
+    apiKey: 'AIzaSyB60EYgoHFPfI92DtjusNrem3gMdCYN5R4',
+    appId: '1:369484143138:ios:0b81ed4e00c0fd9d1fc87b',
+    messagingSenderId: '369484143138',
+    projectId: 'quizzle-demo-36e5c',
+    storageBucket: 'quizzle-demo-36e5c.appspot.com',
     iosBundleId: 'com.example.navigation.RunnerTests',
   );
 }

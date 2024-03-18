@@ -1,12 +1,19 @@
+import 'dart:convert';
 import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:navigation/Provider/provider.dart';
+import 'package:navigation/Views/answer_quiz.dart';
 import 'package:navigation/Views/contact_page.dart';
+import 'package:navigation/Views/google_signin_api.dart';
+import 'package:navigation/Views/results.dart';
+import 'package:navigation/services/database.dart';
 import 'package:provider/provider.dart';
-import 'Views/calculator_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:uuid/uuid.dart';
 import 'Views/login_page.dart';
-import 'package:navigation/Views/settings.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'Views/camera.dart';
@@ -16,35 +23,55 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  await initNotifications();
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (BuildContext context) => UiProvider()..init(),
-      child:
-          Consumer<UiProvider>(builder: (context, UiProvider notifier, child) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          themeMode: notifier.isDark ? ThemeMode.dark : ThemeMode.light,
-          //Our custom theme applied
-          darkTheme: notifier.isDark ? notifier.darkTheme : notifier.lightTheme,
-
-          theme: ThemeData(
-            colorScheme: ColorScheme.fromSeed(
-                seedColor: Color.fromARGB(255, 27, 18, 93)),
-            useMaterial3: true,
-          ),
-          // home: const Settings(),
-          home: Widget197(),
-        );
-      }),
+      child: Consumer<UiProvider>(
+        builder: (context, UiProvider notifier, child) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            themeMode: notifier.isDark ? ThemeMode.dark : ThemeMode.light,
+            darkTheme:
+                notifier.isDark ? notifier.darkTheme : notifier.lightTheme,
+            theme: ThemeData(
+              colorScheme: ColorScheme.fromSeed(
+                  seedColor: Color.fromARGB(255, 27, 18, 93)),
+              useMaterial3: true,
+            ),
+            home: LoginPage(),
+          );
+        },
+      ),
     );
   }
+}
+
+FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> initNotifications() async {
+  final AndroidInitializationSettings initializationSettingsAndroid =
+      const AndroidInitializationSettings(
+          '@mipmap/ic_launcher'); // Use the default launcher icon
+
+  final InitializationSettings initializationSettings = InitializationSettings(
+    android: initializationSettingsAndroid,
+  );
+
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onSelectNotification: (String? payload) async {
+      // Handle notification tap
+    },
+  );
 }
 
 class Widget197 extends StatefulWidget {
@@ -61,32 +88,24 @@ class _Widget197State extends State<Widget197> {
   late List<Widget> _widgetOptions;
   late Widget _aboutContentWidget; // Add this line
 
+  late String userName;
+  late File? _image;
+  // late Stream quizStream; // Declare the stream variable as late
+  late Stream<QuerySnapshot<Map<String, dynamic>>>
+      quizStream; // Specify the correct type
+  late DatabaseService databaseService; // Declare the database service
+
   @override
   void initState() {
     super.initState();
-    _widgetOptions = <Widget>[
-      Container(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              'Welcome Home',
-              style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            SizedBox(height: 20)
-          ],
-        ),
-      ),
-      CalculatorScreen(),
-      _aboutContentWidget = AboutContentWidget(
-          onImageSelected: _handleImageSelected), // Modify this line
-      LoginPage(),
-      ContactPage(), // Add ContactPage here
-    ];
+    loadUserInfo(); // Load user information during initialization
+    databaseService = DatabaseService(uid: Uuid().v4());
+    quizStream = Stream.empty();
+    databaseService.getQuizData2().then((value) {
+      setState(() {
+        quizStream = value;
+      });
+    });
   }
 
   // Define a function to handle the selected image
@@ -137,14 +156,99 @@ class _Widget197State extends State<Widget197> {
             );
             break;
           case 5:
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => Settings()),
-            );
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => Settings()),
+            // );
             break;
         }
       }
     });
+  }
+
+  // Function to handle logout
+  Future<void> logout() async {
+    // Perform logout actions
+    await GoogleSignInApi.logout();
+
+    // Navigate to the login page and replace the current screen
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => LoginPage()),
+    );
+  }
+
+  String userEmail = ''; // Declare userEmail as non-final
+
+  Future<void> loadUserInfo() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUserName = prefs.getString('userName');
+    userEmail = prefs.getString('userEmail') ??
+        "ericbuturo1@gmail.com"; // Assign value directly
+    final base64String = prefs.getString('profilePicture');
+
+    if (base64String != null) {
+      final imageBytes = base64Decode(base64String);
+
+      setState(() {
+        _image = File.fromRawPath(imageBytes);
+        userName = savedUserName ?? "Eric Buturo";
+        // userEmail = userEmail ?? "example@example.com"; // No need to assign here
+      });
+    } else {
+      setState(() {
+        _image = null;
+        userName = savedUserName ?? "Eric Buturo";
+        // userEmail = userEmail ?? "example@example.com"; // No need to assign here
+      });
+    }
+  }
+
+  Widget quizList() {
+    return Container(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16.0),
+        child: StreamBuilder(
+          stream: quizStream,
+          builder: (context,
+              AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+            return snapshot.data == null
+                ? Container()
+                : ListView.builder(
+                    shrinkWrap: true,
+                    physics: ClampingScrollPhysics(),
+                    itemExtent: 180,
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      return Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: 16.0),
+                            child: QuizTile(
+                              noOfQuestions: snapshot.data!.docs.length,
+                              imageUrl: snapshot.data!.docs[index]
+                                  .data()['quizImgUrl'],
+                              title: snapshot.data!.docs[index]
+                                  .data()['quizTitle'],
+                              description:
+                                  snapshot.data!.docs[index].data()['quizDesc'],
+                              id: snapshot.data!.docs[index].id,
+                            ),
+                          ),
+                          Divider(
+                            color: Theme.of(context)
+                                .primaryColor, // Use the color of your theme
+                            thickness: 2.0, // Adjust the thickness as needed
+                            height: 2, // Use 0 to get a full line
+                          ),
+                        ],
+                      );
+                    },
+                  );
+          },
+        ),
+      ),
+    );
   }
 
   @override
@@ -170,7 +274,15 @@ class _Widget197State extends State<Widget197> {
             );
           },
         ),
+        actions: [
+          // Add logout button to AppBar
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: logout, // Call logout function when pressed
+          ),
+        ],
       ),
+      body: quizList(),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -179,14 +291,35 @@ class _Widget197State extends State<Widget197> {
               decoration: BoxDecoration(
                 color: const Color.fromARGB(255, 7, 50, 85),
               ),
-              child: Text(
-                'Navigation',
-                style: TextStyle(
-                  color: const Color.fromARGB(255, 227, 56, 56),
-                  fontSize: 24,
-                ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CircleAvatar(
+                    radius: 30,
+                    backgroundImage: _image != null
+                        ? FileImage(_image!)
+                        : AssetImage('images/default_profile.png')
+                            as ImageProvider, // Provide a default profile picture asset
+                  ),
+                  SizedBox(height: 10),
+                  Text(
+                    userName,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                    ),
+                  ),
+                  Text(
+                    userEmail, // Display the user's email address
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                    ),
+                  ),
+                ],
               ),
             ),
+
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
@@ -212,14 +345,14 @@ class _Widget197State extends State<Widget197> {
               },
             ),
             SizedBox(height: 200),
-            ListTile(
-              leading: Icon(Icons.lock),
-              title: Text('Login'),
-              onTap: () {
-                _onItemTapped(3);
-                Navigator.pop(context);
-              },
-            ),
+            // ListTile(
+            //   leading: Icon(Icons.lock),
+            //   title: Text('Login'),
+            //   onTap: () {
+            //     _onItemTapped(3);
+            //     Navigator.pop(context);
+            //   },
+            // ),
             ListTile(
               leading: Icon(Icons.contact_emergency_rounded),
               title: Text('Contact'),
@@ -238,11 +371,13 @@ class _Widget197State extends State<Widget197> {
                 Navigator.pop(context);
               },
             ),
+            ListTile(
+              leading: Icon(Icons.logout),
+              title: Text('Logout'),
+              onTap: logout,
+            ),
           ],
         ),
-      ),
-      body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -275,6 +410,81 @@ class _Widget197State extends State<Widget197> {
         selectedItemColor: Color.fromARGB(143, 17, 127, 94),
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
+      ),
+    );
+  }
+}
+
+class QuizTile extends StatelessWidget {
+  final String? imageUrl, title, id, description;
+  final int noOfQuestions;
+
+  QuizTile({
+    required this.title,
+    required this.imageUrl,
+    required this.description,
+    required this.id,
+    required this.noOfQuestions,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => QuizPlay(
+                id ?? "",
+                id: '',
+              ),
+            ));
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(horizontal: 24),
+        height: 150,
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Stack(
+            children: [
+              Image.network(
+                imageUrl ?? "", // Use a default value if imageUrl is null
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
+              ),
+              Container(
+                color: Colors.black26,
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        title ?? "", // Use a default value if title is null
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 4,
+                      ),
+                      Text(
+                        description ??
+                            "", // Use a default value if description is null
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }

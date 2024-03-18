@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:navigation/Views/home_page.dart';
+import 'package:navigation/Views/TeacherPage.dart';
+import 'package:navigation/Views/google_signin_api.dart';
 import 'package:navigation/components/my_textfield.dart';
 import 'package:navigation/components/my_button.dart';
 import 'package:navigation/components/square_tile.dart';
-import 'package:navigation/services/auth_service.dart';
+import 'package:navigation/main.dart';
 import 'register_page.dart';
 
 class LoginPage extends StatefulWidget {
@@ -24,15 +25,17 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser != null) {
-        final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+        final GoogleSignInAuthentication googleAuth =
+            await googleUser.authentication;
         final AuthCredential credential = GoogleAuthProvider.credential(
           accessToken: googleAuth.accessToken,
           idToken: googleAuth.idToken,
         );
-        final UserCredential authResult = await FirebaseAuth.instance.signInWithCredential(credential);
+        final UserCredential authResult =
+            await FirebaseAuth.instance.signInWithCredential(credential);
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => Widget197()),
         );
       } else {
         print('Google Sign-In canceled');
@@ -44,13 +47,24 @@ class _LoginPageState extends State<LoginPage> {
 
   void _signUserIn(BuildContext context) async {
     try {
+      //Here
+      String email = emailController.text;
+      if (email == 'admin@gmail.com') {
+        // Redirect to a specific page for the user with this email
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+            builder: (context) => TeacherPage(),
+          ),
+        );
+        return;
+      }
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text,
         password: passwordController.text,
       );
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => HomePage()),
+        MaterialPageRoute(builder: (context) => Widget197()),
       );
     } on FirebaseAuthException catch (e) {
       String errorMessage = 'An error occurred, please try again.';
@@ -87,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                   Icons.person,
                   size: 100,
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 Text(
                   'Welcome, We\'re happy to see you again!',
                   style: TextStyle(
@@ -95,19 +109,19 @@ class _LoginPageState extends State<LoginPage> {
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 25),
+                const SizedBox(height: 30),
                 MyTextField(
                   controller: emailController,
                   hintText: 'Type your username',
                   obscureText: false,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 MyTextField(
                   controller: passwordController,
                   hintText: 'Type your password',
                   obscureText: true,
                 ),
-                const SizedBox(height: 10),
+                const SizedBox(height: 20),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 25.0),
                   child: Row(
@@ -158,11 +172,28 @@ class _LoginPageState extends State<LoginPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(
-                        onTap: _signInWithGoogle,
-                        imagePath: 'lib/images/google.png'),
-                    SizedBox(width: 25),
-                    SquareTile(onTap: () {}, imagePath: 'lib/images/apple.png')
+                    GestureDetector(
+                      onTap: () async {
+                        final user = await GoogleSignInApi.login();
+                        if (user == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Sign in failed'),
+                            ),
+                          );
+                        } else {
+                          // Add your navigation logic here
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => Widget197(),
+                            ),
+                          );
+                        }
+                      },
+                      child: SquareTile(imagePath: 'lib/images/google.png'),
+                    ),
+                    const SizedBox(width: 25),
+                    SquareTile(imagePath: 'lib/images/apple.png')
                   ],
                 ),
                 const SizedBox(height: 20),

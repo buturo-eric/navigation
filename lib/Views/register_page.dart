@@ -5,7 +5,8 @@ import 'package:navigation/Views/home_page.dart';
 import 'package:navigation/components/my_textfield.dart';
 import 'package:navigation/components/my_button.dart';
 import 'package:navigation/components/square_tile.dart';
-import 'package:navigation/services/auth_service.dart';
+import 'package:navigation/Views/google_signin_api.dart';
+import 'package:navigation/main.dart';
 
 class RegisterPage extends StatelessWidget {
   RegisterPage({Key? key});
@@ -153,11 +154,38 @@ class RegisterPage extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SquareTile(
-                        onTap: () => _signInWithGoogle(context),
-                        imagePath: 'lib/images/google.png'),
+                    // GestureDetector(
+                    //   onTap: () async {
+                    //     _signInWithGoogle(context);
+                    //   },
+                    //   child: SquareTile(
+                    //     imagePath: 'lib/images/google.png',
+                    //   ),
+                    // ),
+                    GestureDetector(
+                      onTap: () async {
+                        final user = await GoogleSignInApi.login();
+                        if (user == null) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Sign in failed'),
+                            ),
+                          );
+                        } else {
+                          // Add your navigation logic here
+                          Navigator.of(context).pushReplacement(
+                            MaterialPageRoute(
+                              builder: (context) => Widget197(),
+                            ),
+                          );
+                        }
+                      },
+                      child: SquareTile(imagePath: 'lib/images/google.png'),
+                    ),
                     SizedBox(width: 25),
-                    SquareTile(onTap: () {}, imagePath: 'lib/images/apple.png')
+                    SquareTile(
+                      imagePath: 'lib/images/apple.png',
+                    )
                   ],
                 ),
                 const SizedBox(height: 20),
