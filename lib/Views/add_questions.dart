@@ -57,10 +57,10 @@ class _AddQuestionState extends State<AddQuestion> {
         ),
         title: Text(
           "Add Questions",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: Color.fromARGB(255, 186, 229, 15)),
         ),
         elevation: 0.0,
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
         systemOverlayStyle: SystemUiOverlayStyle.dark,
       ),
       body: isLoading

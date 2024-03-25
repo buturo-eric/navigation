@@ -24,6 +24,7 @@ class CreateQuiz extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       home: const MyHomePage(title: 'Create Quiz'),
+      color: Color.fromARGB(255, 7, 50, 85),
     );
   }
 }
@@ -108,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
         title: Text(
           widget.title,
           style: TextStyle(color: Colors.white),

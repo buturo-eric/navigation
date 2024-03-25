@@ -198,6 +198,8 @@ class _TeacherPageState extends State<TeacherPage> {
             MaterialPageRoute(builder: (context) => CreateQuiz()),
           );
         },
+        backgroundColor: Color.fromARGB(255, 7, 50, 85), // Set background color
+        foregroundColor: Colors.white, // Set icon color
         child: Icon(Icons.add),
       ),
       floatingActionButtonLocation:

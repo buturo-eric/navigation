@@ -97,8 +97,12 @@ class _QuizPlayState extends State<QuizPlay> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
         iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          "Answer Quiz",
+          style: TextStyle(color: Color.fromARGB(255, 186, 229, 15)),
+        ),
       ),
       body: isLoading
           ? Container(
@@ -140,7 +144,10 @@ class _QuizPlayState extends State<QuizPlay> {
               },
             ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.check),
+        child: Icon(
+          Icons.check,
+          color: Colors.white,
+        ),
         onPressed: () {
           if (_currentPageIndex < questionSnaphot.docs.length - 1) {
             _pageController.nextPage(
@@ -180,7 +187,7 @@ class _QuizPlayState extends State<QuizPlay> {
             );
           }
         },
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
         shape: CircleBorder(),
       ),
     );

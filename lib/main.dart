@@ -7,8 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:navigation/Provider/provider.dart';
 import 'package:navigation/Views/answer_quiz.dart';
 import 'package:navigation/Views/contact_page.dart';
+import 'package:navigation/Views/google_location.dart';
 import 'package:navigation/Views/google_signin_api.dart';
-import 'package:navigation/Views/results.dart';
 import 'package:navigation/services/database.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -155,11 +155,19 @@ class _Widget197State extends State<Widget197> {
                       ContactPage()), // Navigate to ContactPage when the "Contact" button is pressed
             );
             break;
+
           case 5:
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => Settings()),
-            // );
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(builder: (context) => Settings()),
+          // );
+          // break;
+
+          case 6: // Add case for Google Map
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => MapPage()),
+            );
             break;
         }
       }
@@ -319,7 +327,6 @@ class _Widget197State extends State<Widget197> {
                 ],
               ),
             ),
-
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
@@ -344,15 +351,6 @@ class _Widget197State extends State<Widget197> {
                 Navigator.pop(context);
               },
             ),
-            SizedBox(height: 200),
-            // ListTile(
-            //   leading: Icon(Icons.lock),
-            //   title: Text('Login'),
-            //   onTap: () {
-            //     _onItemTapped(3);
-            //     Navigator.pop(context);
-            //   },
-            // ),
             ListTile(
               leading: Icon(Icons.contact_emergency_rounded),
               title: Text('Contact'),
@@ -368,6 +366,15 @@ class _Widget197State extends State<Widget197> {
               onTap: () {
                 _onItemTapped(
                     5); // Navigate to Settings, which corresponds to index 5
+                Navigator.pop(context);
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.map),
+              title: Text('Google Map'),
+              onTap: () {
+                _onItemTapped(
+                    6); // Navigate to Google Map, which corresponds to index 6
                 Navigator.pop(context);
               },
             ),
@@ -404,6 +411,11 @@ class _Widget197State extends State<Widget197> {
           BottomNavigationBarItem(
             icon: Icon(Icons.settings),
             label: 'Settings',
+          ),
+          BottomNavigationBarItem(
+            // Add BottomNavigationBarItem for Google Map
+            icon: Icon(Icons.map),
+            label: 'Google Map',
           ),
         ],
         currentIndex: _selectedIndex,

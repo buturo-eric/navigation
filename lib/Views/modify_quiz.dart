@@ -41,7 +41,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Modify Quiz'),
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          "Modify Quiz",
+          style: TextStyle(color: Color.fromARGB(255, 186, 229, 15)),
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -166,7 +171,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                                         Navigator.pop(
                                             context); // Pop the dialog
                                       },
-                                      child: Text('Cancel'),
+                                      child: Text(
+                                        'Cancel',
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 7, 50, 85)),
+                                      ),
                                     ),
                                     TextButton(
                                       onPressed: () {
@@ -182,7 +192,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                                                   TeacherPage()), // Navigate to ContactPage when the "Contact" button is pressed
                                         );
                                       },
-                                      child: Text('Delete'),
+                                      child: Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 7, 50, 85)),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -216,8 +231,13 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                       ),
                     );
                   },
-                  icon: Icon(Icons.add),
+                  icon: Icon(Icons.add_circle_outline_sharp),
                   label: Text('Add Question'),
+                  style: ElevatedButton.styleFrom(
+                    primary:
+                        Color.fromARGB(255, 7, 50, 85), // Set background color
+                    onPrimary: Colors.white, // Set icon and text color
+                  ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
@@ -249,6 +269,11 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                   },
                   icon: Icon(Icons.delete),
                   label: Text('Delete Quiz'),
+                  style: ElevatedButton.styleFrom(
+                    primary:
+                        Color.fromARGB(255, 7, 50, 85), // Set background color
+                    onPrimary: Colors.white, // Set icon and text color
+                  ),
                 ),
               ],
             ),
@@ -313,22 +338,29 @@ class _EditQuizPageState extends State<EditQuizPage> {
             TextFormField(
               controller: _imageUrlController,
             ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Update quiz details in the database
-                DatabaseService(uid: widget.quizId).updateQuizData(
-                  widget.quizId,
-                  {
-                    'quizTitle': _titleController.text,
-                    'quizDesc': _descController.text,
-                    'quizImgUrl': _imageUrlController
-                        .text, // Include imageUrl in the update data
-                  },
-                );
-                Navigator.pop(context);
-              },
-              child: Text('Save'),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Update quiz details in the database
+                  DatabaseService(uid: widget.quizId).updateQuizData(
+                    widget.quizId,
+                    {
+                      'quizTitle': _titleController.text,
+                      'quizDesc': _descController.text,
+                      'quizImgUrl': _imageUrlController
+                          .text, // Include imageUrl in the update data
+                    },
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text('Save'),
+                style: ElevatedButton.styleFrom(
+                  primary:
+                      Color.fromARGB(255, 7, 50, 85), // Set background color
+                  onPrimary: Colors.white, // Set text color
+                ),
+              ),
             ),
           ],
         ),
@@ -371,7 +403,12 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Edit Question'),
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          "Edit Question",
+          style: TextStyle(color: Color.fromARGB(255, 186, 229, 15)),
+        ),
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
@@ -388,24 +425,31 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
               TextFormField(
                 controller: _optionControllers[i],
               ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: () {
-                // Update question details in the database
-                DatabaseService(uid: widget.quizId).updateQuestionData(
-                  widget.quizId,
-                  widget.questionId,
-                  {
-                    'question': _questionController.text,
-                    'option1': _optionControllers[0].text,
-                    'option2': _optionControllers[1].text,
-                    'option3': _optionControllers[2].text,
-                    'option4': _optionControllers[3].text,
-                  },
-                );
-                Navigator.pop(context);
-              },
-              child: Text('Save'),
+            SizedBox(height: 30),
+            Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Update question details in the database
+                  DatabaseService(uid: widget.quizId).updateQuestionData(
+                    widget.quizId,
+                    widget.questionId,
+                    {
+                      'question': _questionController.text,
+                      'option1': _optionControllers[0].text,
+                      'option2': _optionControllers[1].text,
+                      'option3': _optionControllers[2].text,
+                      'option4': _optionControllers[3].text,
+                    },
+                  );
+                  Navigator.pop(context);
+                },
+                child: Text('Save'),
+                style: ElevatedButton.styleFrom(
+                  primary:
+                      Color.fromARGB(255, 7, 50, 85), // Set background color
+                  onPrimary: Colors.white, // Set text color
+                ),
+              ),
             ),
           ],
         ),
