@@ -22,13 +22,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
   void initState() {
     super.initState();
     databaseService = DatabaseService(uid: widget.quizId);
-    // Get the quiz data stream directly
+    // Get the quiz data directly
     quizDataStream = databaseService.getQuizData3(widget.quizId);
-    // Get the question data stream directly
+    // Get the question data directly
     questionDataStream = databaseService.getQuestionData2(widget.quizId);
   }
 
-  // Method to delete a question
   Future<void> deleteQuestion(String questionId) async {
     try {
       await databaseService.deleteQuestion(widget.quizId, questionId);
@@ -85,7 +84,7 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                 trailing: IconButton(
                   icon: Icon(Icons.edit),
                   onPressed: () {
-                    // Navigate to a page to edit quiz details
+                    // Navigate to a page to edit quiz
                     Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -136,7 +135,7 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                           IconButton(
                             icon: Icon(Icons.edit),
                             onPressed: () {
-                              // Navigate to a page to edit the question
+                              // Navigate to page to edit  question
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -158,7 +157,7 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                           IconButton(
                             icon: Icon(Icons.delete),
                             onPressed: () {
-                              // Show a dialog to confirm deleting the question
+                              // Show a dialog to confirm deleting
                               showDialog(
                                 context: context,
                                 builder: (context) => AlertDialog(
@@ -169,7 +168,7 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                                     TextButton(
                                       onPressed: () {
                                         Navigator.pop(
-                                            context); // Pop the dialog
+                                            context);
                                       },
                                       child: Text(
                                         'Cancel',
@@ -180,16 +179,16 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                                     ),
                                     TextButton(
                                       onPressed: () {
-                                        // Delete the question
+                                        // Delete  question
                                         deleteQuestion(questions[index].id);
                                         Navigator.pop(
                                             context); // Pop the dialog
-                                        // Pop the ModifyQuizPage and return to TeacherPage
+                                        // Pop ModifyQuizPage and return to TeacherPage
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  TeacherPage()), // Navigate to ContactPage when the "Contact" button is pressed
+                                                  TeacherPage()), // Navigate to ContactPage when Contact button is clicked
                                         );
                                       },
                                       child: Text(
@@ -219,13 +218,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
               children: [
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Navigate to the AddQuestion page with the quiz ID
                     Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) => AddQuestion(
                           quizId: widget
-                              .quizId, // Pass the quiz ID to AddQuestion page
+                              .quizId,
                           databaseService: databaseService,
                         ),
                       ),
@@ -235,13 +233,12 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                   label: Text('Add Question'),
                   style: ElevatedButton.styleFrom(
                     primary:
-                        Color.fromARGB(255, 7, 50, 85), // Set background color
-                    onPrimary: Colors.white, // Set icon and text color
+                        Color.fromARGB(255, 7, 50, 85), 
+                    onPrimary: Colors.white, 
                   ),
                 ),
                 ElevatedButton.icon(
                   onPressed: () {
-                    // Show a dialog to confirm deleting the entire quiz
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -257,7 +254,6 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                           ),
                           TextButton(
                             onPressed: () {
-                              // Delete the entire quiz
                               databaseService.deleteQuiz(widget.quizId);
                               Navigator.pop(context);
                             },
@@ -271,8 +267,8 @@ class _ModifyQuizPageState extends State<ModifyQuizPage> {
                   label: Text('Delete Quiz'),
                   style: ElevatedButton.styleFrom(
                     primary:
-                        Color.fromARGB(255, 7, 50, 85), // Set background color
-                    onPrimary: Colors.white, // Set icon and text color
+                        Color.fromARGB(255, 7, 50, 85), 
+                    onPrimary: Colors.white,
                   ),
                 ),
               ],
@@ -334,7 +330,7 @@ class _EditQuizPageState extends State<EditQuizPage> {
               controller: _descController,
             ),
             SizedBox(height: 16),
-            Text('Image URL'), // Display the label for the imageUrl
+            Text('Image URL'), 
             TextFormField(
               controller: _imageUrlController,
             ),
@@ -342,14 +338,14 @@ class _EditQuizPageState extends State<EditQuizPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Update quiz details in the database
+                  // Update quiz details
                   DatabaseService(uid: widget.quizId).updateQuizData(
                     widget.quizId,
                     {
                       'quizTitle': _titleController.text,
                       'quizDesc': _descController.text,
                       'quizImgUrl': _imageUrlController
-                          .text, // Include imageUrl in the update data
+                          .text,
                     },
                   );
                   Navigator.pop(context);
@@ -357,7 +353,7 @@ class _EditQuizPageState extends State<EditQuizPage> {
                 child: Text('Save'),
                 style: ElevatedButton.styleFrom(
                   primary:
-                      Color.fromARGB(255, 7, 50, 85), // Set background color
+                      Color.fromARGB(255, 7, 50, 85), 
                   onPrimary: Colors.white, // Set text color
                 ),
               ),
@@ -429,7 +425,7 @@ class _EditQuestionPageState extends State<EditQuestionPage> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Update question details in the database
+                  // Update question details in the db
                   DatabaseService(uid: widget.quizId).updateQuestionData(
                     widget.quizId,
                     widget.questionId,

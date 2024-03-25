@@ -4,8 +4,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart'; // Import FlutterLocalNotificationsPlugin
 import 'package:navigation/Provider/provider.dart';
 import 'package:navigation/Views/answer_quiz.dart';
+import 'package:navigation/Views/calculator_screen.dart';
 import 'package:navigation/Views/contact_page.dart';
 import 'package:navigation/Views/google_location.dart';
 import 'package:navigation/Views/google_signin_api.dart';
@@ -17,6 +19,7 @@ import 'Views/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'Views/camera.dart';
+import 'package:navigation/Views/settings.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -74,6 +77,50 @@ Future<void> initNotifications() async {
   );
 }
 
+class NotificationService {
+  static final FlutterLocalNotificationsPlugin
+      _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
+  // Add a constructor to initialize NotificationService
+  NotificationService() {
+    initialize();
+  }
+
+  // Initialize notification service
+  static Future<void> initialize() async {
+    final AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings('notification_icon');
+    final IOSInitializationSettings initializationSettingsIOS =
+        IOSInitializationSettings();
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIOS);
+    await _flutterLocalNotificationsPlugin.initialize(initializationSettings);
+  }
+
+  // Display notification
+  static Future<void> displayNotification(String title, String body) async {
+    const AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+      'your_channel_id',
+      'your_channel_name',
+      importance: Importance.max,
+      priority: Priority.high,
+      // Set the small icon resource
+      icon: 'notification_icon',
+    );
+    const NotificationDetails platformChannelSpecifics =
+        NotificationDetails(android: androidPlatformChannelSpecifics);
+    await _flutterLocalNotificationsPlugin.show(
+      0,
+      title,
+      body,
+      platformChannelSpecifics,
+    );
+  }
+}
+
 class Widget197 extends StatefulWidget {
   Widget197({Key? key}) : super(key: key);
 
@@ -98,14 +145,42 @@ class _Widget197State extends State<Widget197> {
   @override
   void initState() {
     super.initState();
-    loadUserInfo(); // Load user information during initialization
+    // Initialize databaseService
     databaseService = DatabaseService(uid: Uuid().v4());
+
+    // Load user information during initialization
+    loadUserInfo();
+
+    // Load quiz data
+    loadQuizData();
+
+    // Initialize quizStream
     quizStream = Stream.empty();
+
+    // Get quiz data and update quizStream
     databaseService.getQuizData2().then((value) {
       setState(() {
         quizStream = value;
       });
     });
+  }
+
+  // Load quiz data
+  void loadQuizData() {
+    databaseService.getQuizData2().then((value) {
+      setState(() {
+        quizStream = value;
+      });
+      displayNewQuizNotification(); // Call the displayNewQuizNotification method here
+    });
+  }
+
+  // Display new quiz notification
+  void displayNewQuizNotification() {
+    NotificationService.displayNotification(
+      'New Quiz Added!',
+      'Check out the latest quiz available.',
+    );
   }
 
   // Define a function to handle the selected image
@@ -132,44 +207,51 @@ class _Widget197State extends State<Widget197> {
 
   void _onItemTapped(int index) {
     setState(() {
-      if (index < 4) {
-        _selectedIndex = index;
-      } else {
-        switch (index) {
-          case 2:
-            // Call pickImage function when the "About" button is pressed
-            pickImage();
-            break;
-          case 3: // Assuming 3 is the index for the "About" button
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => CameraScreen()),
-            );
-            break;
-
-          case 4:
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) =>
-                      ContactPage()), // Navigate to ContactPage when the "Contact" button is pressed
-            );
-            break;
-
-          case 5:
-          // Navigator.push(
-          //   context,
-          //   MaterialPageRoute(builder: (context) => Settings()),
-          // );
-          // break;
-
-          case 6: // Add case for Google Map
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => MapPage()),
-            );
-            break;
-        }
+      _selectedIndex = index;
+      switch (index) {
+        case 0:
+          // Handle Home
+          break;
+        case 1:
+          // Handle Calculator
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CalculatorScreen()),
+          );
+          break;
+        case 2:
+          // Handle About
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    AboutContentWidget(onImageSelected: (File? image) {})),
+          );
+          break;
+        case 3:
+          // Handle Contact
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => ContactPage()),
+          );
+          break;
+        case 4:
+          // Handle Settings
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => SettingsPage()),
+          );
+          break;
+        case 5:
+          // Handle Google Map
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => MapPage()),
+          );
+          break;
+        default:
+          // Handle other cases or do nothing
+          break;
       }
     });
   }
@@ -356,7 +438,7 @@ class _Widget197State extends State<Widget197> {
               title: Text('Contact'),
               onTap: () {
                 _onItemTapped(
-                    4); // Navigate to ContactPage, which corresponds to index 4
+                    3); // Navigate to ContactPage, which corresponds to index 4
                 Navigator.pop(context);
               },
             ),
@@ -365,7 +447,7 @@ class _Widget197State extends State<Widget197> {
               title: Text('Settings'),
               onTap: () {
                 _onItemTapped(
-                    5); // Navigate to Settings, which corresponds to index 5
+                    4); // Navigate to Settings, which corresponds to index 5
                 Navigator.pop(context);
               },
             ),
@@ -374,7 +456,7 @@ class _Widget197State extends State<Widget197> {
               title: Text('Google Map'),
               onTap: () {
                 _onItemTapped(
-                    6); // Navigate to Google Map, which corresponds to index 6
+                    5); // Navigate to Google Map, which corresponds to index 6
                 Navigator.pop(context);
               },
             ),
@@ -399,10 +481,6 @@ class _Widget197State extends State<Widget197> {
           BottomNavigationBarItem(
             icon: Icon(Icons.person),
             label: 'About',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.lock),
-            label: 'Login',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.contact_page),

@@ -21,7 +21,6 @@ int _incorrect = 0;
 int _notAttempted = 0;
 int total = 0;
 
-/// Stream
 late StreamController<List<int>> infoStreamController;
 late Stream<List<int>> infoStream;
 
@@ -262,7 +261,7 @@ class _QuizPlayTileState extends State<QuizPlayTile> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          SizedBox(height: 20), // Add this SizedBox to move the question down
+          SizedBox(height: 20),
           Container(
             margin: EdgeInsets.symmetric(horizontal: 20),
             child: Text(

@@ -41,15 +41,15 @@ class _MapPageState extends State<MapPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Your Location', // Add this line to set the title
-          style: TextStyle(color: Colors.white),
+          'Google Map Location',
+          style: TextStyle(color: Color.fromARGB(255, 186, 229, 15)),
         ),
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Color.fromARGB(255, 7, 50, 85),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: _currentP == null
           ? const Center(
-              child: Text("Loading..."),
+              child: Text("Refreshing..."),
             )
           : GoogleMap(
               onMapCreated: ((GoogleMapController controller) =>

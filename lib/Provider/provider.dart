@@ -22,14 +22,13 @@ class UiProvider extends ChangeNotifier {
   }
 
   Future<void> init() async {
-    // Load initial state from shared preferences...
   }
 }
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final SharedPreferences prefs = await SharedPreferences.getInstance();
-  // Initialize provider state...
+  // Initialize provider state
 
   runApp(ChangeNotifierProvider<UiProvider>(
     create: (context) => UiProvider()..init(),
@@ -41,12 +40,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // ...
       home: Consumer<UiProvider>(
         builder: (context, provider, child) {
           return Scaffold(
-            // ...
-            // Use provider.isDark or provider.theme for styling...
           );
         },
       ),

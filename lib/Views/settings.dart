@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:navigation/Provider/provider.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatefulWidget {
-  const Settings({Key? key});
+class SettingsPage extends StatefulWidget {
+  const SettingsPage({Key? key});
 
   @override
-  _SettingsState createState() => _SettingsState();
+  _SettingsPageState createState() => _SettingsPageState();
 }
 
-class _SettingsState extends State<Settings> {
+class _SettingsPageState extends State<SettingsPage> {
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
 
   @override

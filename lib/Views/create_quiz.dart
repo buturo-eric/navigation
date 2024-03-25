@@ -7,10 +7,8 @@ import 'package:uuid/uuid.dart';
 
 void main() {
   runApp(const CreateQuiz());
-  // Create an instance of the Uuid class
   var uuid = Uuid();
 
-  // Generate a random UUID
   String randomUuid = uuid.v4();
   print('Random UUID: $randomUuid');
 }
@@ -91,12 +89,11 @@ class _MyHomePageState extends State<MyHomePage> {
         });
       }).catchError((error) {
         print(error);
-        // Navigate to the AddQuestion page with the quiz ID even if there's an error
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => AddQuestion(
-              quizId: quizId, // Pass the quiz ID to AddQuestion page
+              quizId: quizId,
               databaseService: databaseService,
             ),
           ),
@@ -118,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
         leading: IconButton(
           icon: Icon(Icons.arrow_back),
           onPressed: () {
-            // Navigate to the TeacherPage page
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (context) => TeacherPage()),

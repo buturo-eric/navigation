@@ -30,13 +30,12 @@ class _TeacherPageState extends State<TeacherPage> {
   late String userName;
   late File? _image;
   int _selectedIndex = 0;
-  String userEmail = ''; // Declare userEmail as non-final
+  String userEmail = ''; 
 
   bool showStatusIndicators = true;
-  // late Stream quizStream; // Declare the stream variable as late
   late Stream<QuerySnapshot<Map<String, dynamic>>>
-      quizStream; // Specify the correct type
-  late DatabaseService databaseService; // Declare the database service
+      quizStream; 
+  late DatabaseService databaseService; // Declare database service
 
   Widget quizList() {
     return Container(
@@ -71,9 +70,9 @@ class _TeacherPageState extends State<TeacherPage> {
                           ),
                           Divider(
                             color: Theme.of(context)
-                                .primaryColor, // Use the color of your theme
-                            thickness: 2.0, // Adjust the thickness as needed
-                            height: 2, // Use 0 to get a full line
+                                .primaryColor, 
+                            thickness: 2.0, 
+                            height: 2,
                           ),
                         ],
                       );
@@ -102,7 +101,7 @@ class _TeacherPageState extends State<TeacherPage> {
     final prefs = await SharedPreferences.getInstance();
     final savedUserName = prefs.getString('userName');
     userEmail = prefs.getString('userEmail') ??
-        "admin@gmail.com"; // Assign value directly
+        "admin@gmail.com"; 
     final base64String = prefs.getString('profilePicture');
 
     if (base64String != null) {
@@ -110,12 +109,12 @@ class _TeacherPageState extends State<TeacherPage> {
 
       setState(() {
         _image = File.fromRawPath(imageBytes);
-        userName = savedUserName ?? "Admin!";
+        userName = savedUserName ?? "Admin";
       });
     } else {
       setState(() {
         _image = null;
-        userName = savedUserName ?? "Admin!";
+        userName = savedUserName ?? "Admin";
       });
     }
   }
@@ -159,13 +158,11 @@ class _TeacherPageState extends State<TeacherPage> {
   // Function to handle logout
   Future<void> logout() async {
     try {
-      // Clear user data from SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       prefs.remove('userName');
       prefs.remove('userEmail');
       prefs.remove('profilePicture');
 
-      // Navigate to the login page and replace the current screen
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => LoginPage()),
@@ -189,21 +186,20 @@ class _TeacherPageState extends State<TeacherPage> {
         backgroundColor:
             Color.fromARGB(255, 7, 50, 85), // Change the app bar color
       ),
-      body: quizList(), // Move quizList to body of Scaffold
+      body: quizList(),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Navigate to another page
           Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => CreateQuiz()),
           );
         },
-        backgroundColor: Color.fromARGB(255, 7, 50, 85), // Set background color
-        foregroundColor: Colors.white, // Set icon color
+        backgroundColor: Color.fromARGB(255, 7, 50, 85), 
+        foregroundColor: Colors.white, 
         child: Icon(Icons.add),
       ),
       floatingActionButtonLocation:
-          FloatingActionButtonLocation.endFloat, // Adjust as needed
+          FloatingActionButtonLocation.endFloat,
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -267,11 +263,10 @@ class QuizTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Store the quizId
-    String quizId = id ?? ""; // Default value if id is null
+    String quizId = id ?? ""; 
 
     return GestureDetector(
       onTap: () async {
-        // Navigate to ModifyQuizPage with the quizId
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -287,7 +282,7 @@ class QuizTile extends StatelessWidget {
           child: Stack(
             children: [
               Image.network(
-                imageUrl ?? "", // Use a default value if imageUrl is null
+                imageUrl ?? "", 
                 fit: BoxFit.cover,
                 width: MediaQuery.of(context).size.width,
               ),
@@ -298,7 +293,7 @@ class QuizTile extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text(
-                        title ?? "", // Use a default value if title is null
+                        title ?? "", 
                         style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -310,7 +305,7 @@ class QuizTile extends StatelessWidget {
                       ),
                       Text(
                         description ??
-                            "", // Use a default value if description is null
+                            "", 
                         style: TextStyle(
                           fontSize: 13,
                           color: Colors.white,

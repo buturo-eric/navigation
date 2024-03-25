@@ -47,7 +47,6 @@ class _LoginPageState extends State<LoginPage> {
 
   void _signUserIn(BuildContext context) async {
     try {
-      //Here
       String email = emailController.text;
       if (email == 'admin@gmail.com') {
         // Redirect to a specific page for the user with this email

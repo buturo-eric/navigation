@@ -11,7 +11,7 @@ FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await initNotifications(); // Initialize notifications
+  await initNotifications();
   runApp(
     MaterialApp(
       home: Results(
@@ -19,13 +19,12 @@ void main() async {
         total: 10,
         correct: 10,
         userName:
-            await loadUserName(), // Load user name from shared preferences
+            await loadUserName(),
       ),
     ),
   );
 }
 
-// Function to load user name from shared preferences
 Future<String?> loadUserName() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString('userName');
@@ -34,12 +33,12 @@ Future<String?> loadUserName() async {
 Future<String> getQuizIdFromSharedPreferences() async {
   final prefs = await SharedPreferences.getInstance();
   return prefs.getString('quizId') ??
-      ''; // Replace with your key for quiz ID in SharedPreferences
+      '';
 }
 
 Future<void> initNotifications() async {
   const AndroidInitializationSettings initializationSettingsAndroid =
-      AndroidInitializationSettings('classme'); // Replace with your app icon
+      AndroidInitializationSettings('classme'); 
 
   final InitializationSettings initializationSettings = InitializationSettings(
     android: initializationSettingsAndroid,
@@ -48,7 +47,6 @@ Future<void> initNotifications() async {
   await flutterLocalNotificationsPlugin.initialize(
     initializationSettings,
     onSelectNotification: (String? payload) async {
-      // Handle notification tap
     },
   );
 }
@@ -72,8 +70,6 @@ class _ResultsState extends State<Results> {
   @override
   void initState() {
     super.initState();
-
-    // Call sendNotification when the page loads
     sendNotification();
   }
 
@@ -121,7 +117,7 @@ class _ResultsState extends State<Results> {
                           EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                       decoration: BoxDecoration(
                         color: Theme.of(context)
-                            .primaryColor, // Use theme color here
+                            .primaryColor,
                         borderRadius: BorderRadius.circular(30),
                       ),
                       child: Text(
@@ -151,12 +147,12 @@ class _ResultsState extends State<Results> {
         NotificationDetails(android: androidPlatformChannelSpecifics);
 
     final userName =
-        widget.userName ?? ''; // Use userName from widget or default to 'User'
+        widget.userName ?? ''; 
 
     await flutterLocalNotificationsPlugin.show(
       0,
       'Well Done! $userName',
-      'Congratulations on completing the quiz!',
+      'Congratulations, Completed the quiz Succesffully',
       platformChannelSpecifics,
     );
   }

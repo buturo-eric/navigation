@@ -17,7 +17,6 @@ class OptionTile extends StatefulWidget {
 class _OptionTileState extends State<OptionTile> {
   @override
   Widget build(BuildContext context) {
-    // ignore: unused_local_variable
     ThemeData theme = Theme.of(context);
     Color correctColor = Colors.green.withOpacity(0.7);
     Color incorrectColor = Colors.red.withOpacity(0.7);
@@ -94,7 +93,7 @@ class _NoOfQuestionTileState extends State<NoOfQuestionTile> {
                 topLeft: Radius.circular(14),
                 bottomLeft: Radius.circular(14),
               ),
-              color: theme.primaryColor, // Use primary color from the theme
+              color: theme.primaryColor,
             ),
             child: Text(
               "${widget.number}",
@@ -108,7 +107,7 @@ class _NoOfQuestionTileState extends State<NoOfQuestionTile> {
                 topRight: Radius.circular(14),
                 bottomRight: Radius.circular(14),
               ),
-              color: theme.primaryColor, // Use accent color from the theme
+              color: theme.primaryColor,
             ),
             child: Text(
               widget.text,
